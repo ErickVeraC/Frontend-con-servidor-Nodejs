@@ -15,38 +15,30 @@ async function getAllPosts() {
   }
 }
 
-// Función para realizar la solicitud POST al servidor
-const login = async (email, password) => {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+async function createPost(postData, token) {
+  try {
+    const response = await fetch(`${BASE_URL}/post`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(postData),
+    });
 
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorDetails}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw error;
   }
-
-  const data = await response.json();
-  return data.data.token;
-};
-
-// Obtener perfil del usuario
-async function getUserProfile(token) {
-  const userId = localStorage.getItem("userId");
-  const response = await fetch(`${BASE_URL}/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch user profile");
-  }
-
-  return await response.json();
 }
 
-export { getAllPosts, login, getUserProfile };
+export { getAllPosts, createPost };

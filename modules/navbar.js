@@ -1,47 +1,37 @@
-import { getUserProfile } from "./postApi.js";
+import { getUserProfile } from "./userApi.js";
 
-export async function createNavbar() {
+async function createNavbar() {
   const nav = document.createElement("nav");
-  nav.className = "navbar navbar-expand-lg navbar-light bg-light d-flex gap-3";
+  nav.className = "navbar navbar-expand-lg navbar-light bg-light";
 
   const brandLink = document.createElement("a");
   brandLink.className = "navbar-brand";
-  brandLink.href = "#";
-
-  const brandImg = document.createElement("img");
-  brandImg.src = "/images/DevIcon.jpg";
-  brandImg.alt = "Dev Icon";
-  brandImg.width = 40;
-  brandImg.className = "ms-3";
-
-  brandLink.appendChild(brandImg);
+  brandLink.href = "index.html";
+  brandLink.textContent = "MyApp";
 
   const togglerButton = document.createElement("button");
   togglerButton.className = "navbar-toggler";
   togglerButton.type = "button";
   togglerButton.setAttribute("data-toggle", "collapse");
-  togglerButton.setAttribute("data-target", "#navbarSupportedContent");
-  togglerButton.setAttribute("aria-controls", "navbarSupportedContent");
+  togglerButton.setAttribute("data-target", "#navbarNav");
+  togglerButton.setAttribute("aria-controls", "navbarNav");
   togglerButton.setAttribute("aria-expanded", "false");
   togglerButton.setAttribute("aria-label", "Toggle navigation");
 
   const togglerIcon = document.createElement("span");
   togglerIcon.className = "navbar-toggler-icon";
-
   togglerButton.appendChild(togglerIcon);
 
   const collapseDiv = document.createElement("div");
   collapseDiv.className = "collapse navbar-collapse";
-  collapseDiv.id = "navbarSupportedContent";
+  collapseDiv.id = "navbarNav";
 
-  const navList = document.createElement("ul");
-  navList.className = "navbar-nav mr-auto";
-  collapseDiv.appendChild(navList);
+  const token = localStorage.getItem("token");
+  const idFromToken = localStorage.getItem("idFromToken");
 
-  const token = localStorage.getItem("authToken");
-  if (!token) {
+  if (!token || !idFromToken) {
     const loginButton = document.createElement("button");
-    loginButton.className = "btn ml-3 mr-3";
+    loginButton.className = "btn btn-outline-success mr-3";
     loginButton.type = "button";
     loginButton.textContent = "Log In";
     loginButton.addEventListener("click", () => {
@@ -49,7 +39,7 @@ export async function createNavbar() {
     });
 
     const createAccountButton = document.createElement("button");
-    createAccountButton.className = "btn btn-outline-primary mr-3";
+    createAccountButton.className = "btn btn-outline-primary";
     createAccountButton.type = "button";
     createAccountButton.textContent = "Create Account";
     createAccountButton.addEventListener("click", () => {
@@ -64,8 +54,8 @@ export async function createNavbar() {
     logoutButton.type = "button";
     logoutButton.textContent = "Log Out";
     logoutButton.addEventListener("click", () => {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+      localStorage.removeItem("idFromToken");
       window.location.href = "index.html";
     });
 
@@ -78,13 +68,12 @@ export async function createNavbar() {
     });
 
     try {
-      const userProfile = await getUserProfile(token);
+      const userProfile = await getUserProfile(idFromToken);
       const profilePic = document.createElement("img");
-      profilePic.src = userProfile.profilePicUrl;
+      profilePic.src = userProfile.profilePic;
       profilePic.alt = "Profile Picture";
       profilePic.width = 40;
       profilePic.style.borderRadius = "50%";
-
       collapseDiv.appendChild(profilePic);
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
@@ -97,6 +86,7 @@ export async function createNavbar() {
   nav.appendChild(brandLink);
   nav.appendChild(togglerButton);
   nav.appendChild(collapseDiv);
-
   return nav;
 }
+
+export { createNavbar };

@@ -36,4 +36,17 @@ async function login(email, password) {
   return { token: data.data.token, userId: data.data.userId };
 }
 
-export { login };
+const getUserProfile = async (id) => {
+  const response = await fetch(`${BASE_URL}/user/${id}`, {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data = await response.json();
+  return data.data;
+};
+
+export { login, createUser, getUserProfile };

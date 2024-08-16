@@ -1,4 +1,3 @@
-// Importa la función para obtener los posts
 import { createNavbar } from "./modules/navbar.js";
 import { getPosts } from "./modules/getPosts.js";
 
